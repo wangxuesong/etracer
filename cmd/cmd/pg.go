@@ -43,14 +43,9 @@ var (
 // pgCmd represents the pg command
 var pgCmd = &cobra.Command{
 	Use:   "pg",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: runCommand,
+	Short: "跟踪 PostgresSQL",
+	Long:  `跟踪 PostgresSQL`,
+	Run:   runCommand,
 }
 
 func runCommand(cmd *cobra.Command, args []string) {
@@ -161,7 +156,7 @@ func runCommand(cmd *cobra.Command, args []string) {
 			continue
 		}
 
-		log.Printf("%d:%s return value: %s", event.Pid, attachFunc, unix.ByteSliceToString(event.Query[:]))
+		log.Printf("pid: %d, func: %s, sql: %s", event.Pid, attachFunc, unix.ByteSliceToString(event.Query[:]))
 	}
 
 	fmt.Println("pg called")
@@ -179,6 +174,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// pgCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	pgCmd.PersistentFlags().StringVarP(&pgPath, "postgres", "m", "/usr/bin/postgres", "postgres binary file path, use to hook")
+	pgCmd.PersistentFlags().StringVarP(&pgPath, "postgres", "p", "/usr/bin/postgres", "postgres binary file path, use to hook")
 	pgCmd.PersistentFlags().StringVarP(&funcName, "funcname", "f", "exec_simple_query", "function name to hook")
 }
