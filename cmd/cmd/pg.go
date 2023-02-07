@@ -35,6 +35,11 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+var (
+	pgPath   string
+	funcName string
+)
+
 // pgCmd represents the pg command
 var pgCmd = &cobra.Command{
 	Use:   "pg",
@@ -55,8 +60,8 @@ func runCommand(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	binaryPath := "/home/martin/.pgx/13.9/pgx-install/bin/postgres"
-	attachFunc := "exec_simple_query"
+	binaryPath := pgPath
+	attachFunc := funcName
 	probes := []*manager.Probe{
 		{
 			Section:          "uprobe/exec_simple_qurey",
@@ -156,7 +161,7 @@ func runCommand(cmd *cobra.Command, args []string) {
 			continue
 		}
 
-		log.Printf("%s:%s return value: %s", binaryPath, attachFunc, unix.ByteSliceToString(event.Query[:]))
+		log.Printf("%d:%s return value: %s", event.Pid, attachFunc, unix.ByteSliceToString(event.Query[:]))
 	}
 
 	fmt.Println("pg called")
@@ -174,4 +179,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// pgCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	pgCmd.PersistentFlags().StringVarP(&pgPath, "postgres", "m", "/usr/bin/postgres", "postgres binary file path, use to hook")
+	pgCmd.PersistentFlags().StringVarP(&funcName, "funcname", "f", "exec_simple_query", "function name to hook")
 }
