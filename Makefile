@@ -1,4 +1,3 @@
-.PHONY: env
 
 .ONESHELL:
 SHELL = /bin/sh
@@ -210,3 +209,19 @@ $(KERN_OBJECTS): %.o: %.c
 .PHONY: ebpf
 ebpf: $(KERN_OBJECTS)
 
+.PHONY: assets
+assets: \
+	.checkver_$(CMD_GO) \
+	ebpf
+	$(CMD_GO) run github.com/shuLhan/go-bindata/cmd/go-bindata -pkg assets -o "assets/ebpf.go" $(wildcard ./internal/bytecode/*.o)
+
+.PHONY: build
+build: assets
+	go build
+
+.DEFAULT_GOAL :=
+.PHONY: usage
+usage:
+	@echo "make env	# 显示编译环境"
+	@echo ""
+	@echo "make build	# 生成 etracer"
